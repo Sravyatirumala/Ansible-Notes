@@ -1,0 +1,21 @@
+---
+- name: Install and start Apache server, and ensure file ownership
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install Apache
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Start and enable Apache service
+      systemd:
+        name: apache2
+        state: started
+        enabled: yes
+
+          # become yes =  we cant install package without root user
+
+
+ 

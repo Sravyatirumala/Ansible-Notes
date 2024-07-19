@@ -1,0 +1,17 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install applications
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - vim
+        - jq
+
+
+#item is by default ansible variable to create multiple  packages. Jq is also a package.
+
+
+

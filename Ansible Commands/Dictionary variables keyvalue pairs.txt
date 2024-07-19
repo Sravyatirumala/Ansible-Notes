@@ -1,0 +1,14 @@
+---
+- name: Variables
+  hosts: all
+  vars:
+    name: madhu.txt
+    ip:
+    username:
+      name: madhu
+      domain: cloudops
+  tasks:
+    - name:
+      file:
+        path: ./{{username['domain']}}
+        state: touch

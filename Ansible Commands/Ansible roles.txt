@@ -1,0 +1,166 @@
+Create role:    
+
+ansible-galaxy role init apache2 (anthing we can  give)
+
+after creating role we will get directories and file, tasks.
+
+In tasks Main.yml
+
+---
+# tasks file for httpd
+    - name: Install apache httpd
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+        update_cache: yes
+    - name: Copy file with owner and permissions
+      ansible.builtin.copy:
+        src: files/index.html
+        dest: /var/www/html
+        owner: root
+        group: root
+        mode: '0644'
+
+
+    - name: Update APT package index
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install Java
+      ansible.builtin.apt:
+        name: openjdk-11-jdk
+        state: present
+
+
+    - name: Update APT package index
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install wget
+      ansible.builtin.apt:
+        name: wget
+        state: present
+
+
+Note : To uninstall single package  keep state: absent and in role :    
+    install_httpd: false
+     install_java: true
+     install_wget: false
+
+Files:
+create index.html  in files folder as we have givem src code.
+
+create Hosts:  vi hosts or inv file
+
+slave-1 ansible_host=18.226.4.87  ansible_user=ubuntu
+slave-2 ansible_host=3.145.86.134  ansible_user=ubuntu
+
+
+create playbook apache2  (we can give any playbook name and we declare role name here)
+
+---
+- hosts: all
+  become: true
+  roles: 
+   - apache2
+   - bsmeding.docker
+      
+Run:
+
+ansible-playbook apache.yml -i hosts 
+
+We can check in slaves nodes using ip addess.
+
+
+.................................................................
+We can Install docker thorugh ANsible-galaxy.
+ansible-galaxy role install bsmeding.docker
+
+
+We can see imported roles in 
+root@Ansible-controler:~# ansible-galaxy list
+# /root/.ansible/roles
+- bsmeding.docker, 1.0.11
+
+
+vi docker.yml:
+---
+- hosts: all
+  become: true
+  roles:
+    - bsmeding.docker
+ 
+Else we can even put this package in ansible.yml file instead of coker.yml file creating seperately
+
+ansible-playbook apache.yml -i hosts
+
+.................................................................
+Using loops:  Insteas of loopswe can just use absent in tasks/main.yml and install_wget: false in playbook.yml 
+
+
+tasks/main/yml
+---
+- name: Install required packages
+  ansible.builtin.package:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ packages_to_install }}"
+  when: packages_to_install is defined
+
+- name: Ensure ignored packages are not installed
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ packages_to_ignore }}"
+  when: packages_to_ignore is defined.
+
+
+
+
+create apache.yml
+---
+- hosts: all
+  become: true
+  roles:
+    - role: install_packages
+      vars:
+        packages_to_install:
+          - name: apache2    # Package 1: Apache HTTP Server
+            state: present
+          - name: openjdk-11-jdk  # Package 2: OpenJDK 11
+            state: present
+        packages_to_ignore:
+          - wget   # Package to ignore: wget
+
+
+
+
+Variables and Templating:
+
+Scenario: You need to deploy different configurations to development, staging, and production environments. How would you manage environment-specific variables in Ansible?
+
+
+
+
+Scenario: Your infrastructure is growing rapidly, and you're encountering performance issues with Ansible. What strategies would you use to scale Ansible for larger environments?
+
+
+
+Scenario: You have a custom script that needs to be executed as part of a playbook. How would you integrate this script into an Ansible workflow?
+
+
+
+How would you validate the success of a playbook run before pushing it to production?
+
+
+
+How would you monitor the execution of Ansible tasks and gather reports on playbook runs?
+Answer:
+
+log_path = /path/to/ansible.log
+   or
+
+
+ansible-playbook -v playbook.yml
+
+

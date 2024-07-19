@@ -1,0 +1,26 @@
+---
+- hosts: localhost
+  connection: local
+
+  tasks: 
+    - name: Create EC2 instances
+      amazon.aws.ec2_instance:
+       name: "{{item.name}}"
+       key_name: "us-east-2"
+       vpc_subnet_id: "subnet-080267d8f17e627df"
+       instance_type: "t2.micro"
+       security_group: "allow_all_traffic"
+       region: "us-east-2"
+       aws_access_key: "{{ access_key }}"
+       aws_secret_key: "{{ secret_key }}"
+       image_id: "{{item.image}}" 
+       network:
+          assign_public_ip: true
+       tags:
+            Environment: Testing
+      loop: 
+        - { image: "ami-0862be96e41dcbf74", name: "manage-node-1" }
+        - { image: "ami-0862be96e41dcbf74", name: "manage-node-2" }
+        - { image: "ami-08be1e3e6c338b037", name: "manage-node-3" }
+     
+       

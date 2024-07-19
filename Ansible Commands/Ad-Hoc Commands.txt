@@ -1,0 +1,1 @@
+ 1.  ansible all -i host -m copy -a "src=/root/playbook.yml  dest=/home/ubuntu  owner=root group=root mode=0755" -b

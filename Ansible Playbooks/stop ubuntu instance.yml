@@ -1,0 +1,10 @@
+---
+  hosts: Ubuntu
+  become: true
+  remote_user: root
+  vars:
+    ansible_ssh_private_key_file: ~/.ssh/id_rsa
+  tasks:
+    - name: Shutdown ubuntu instances only
+      ansible.builtin.command: /sbin/shutdown -t now
+      when: ansible_facts['os_family'] == "Debian"

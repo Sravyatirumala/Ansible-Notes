@@ -1,0 +1,13 @@
+---
+- name: Variables
+  hosts: localhost
+  vars:
+    name:
+      - revanth.txt
+      - madhu.txt
+      - reddy.txt
+  tasks:
+    - name: 
+      file:
+        path: ./{{name[1]}}
+        state: touch

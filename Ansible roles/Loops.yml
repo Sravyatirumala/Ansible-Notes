@@ -1,0 +1,36 @@
+Using loops:
+
+
+create apache.yml
+---
+- name: Install required packages
+  ansible.builtin.package:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default('present') }}"
+  loop: "{{ packages_to_install }}"
+  when: packages_to_install is defined
+
+- name: Ensure ignored packages are not installed
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ packages_to_ignore }}"
+  when: packages_to_ignore is defined
+
+
+
+tasks/main/yml
+
+---
+- hosts: all
+  become: true
+  roles:
+    - role: install_packages
+      vars:
+        packages_to_install:
+          - name: apache2    # Package 1: Apache HTTP Server
+            state: present
+          - name: openjdk-11-jdk  # Package 2: OpenJDK 11
+            state: present
+        packages_to_ignore:
+          - wget   # Package to ignore: wget
