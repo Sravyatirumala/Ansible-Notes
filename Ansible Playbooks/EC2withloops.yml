@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+  vars_files:
+    - secrets.yml  
+
+  tasks: 
+    - name: Create EC2 instances
+      amazon.aws.ec2_instance:
+       name: "{{item.name}}"
+       key_name: "useast-2"
+       vpc_subnet_id: "subnet-02ac254bd167222c0"
+       instance_type: "t2.micro"
+       security_group: "allow_all_traffic"
+       region: "us-east-2"
+       aws_access_key: "{{ access_key }}"
+       aws_secret_key: "{{ secret_key }}"
+       image_id: "{{item.image}}" 
+       network:
+          assign_public_ip: true
+       tags:
+            Environment: Testing
+      loop: 
+        - { image: "ami-0862be96e41dcbf74", name: "manage-node-1" }
+        - { image: "ami-0862be96e41dcbf74", name: "manage-node-2" }
+        - { image: "ami-08be1e3e6c338b037", name: "manage-node-3" }
+     
+      
+

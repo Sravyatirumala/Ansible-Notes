@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  connection: local
+  become: yes
+  vars_files:
+    - secrets.yml
+  tasks:
+    - name: Terminate EC2 instance
+      amazon.aws.ec2_instance:
+        instance_ids:
+          - "i-09ec215d59165ac89"  # Replace with your actual instance ID
+        state: absent
+        key_name: "useast-2"
+        vpc_subnet_id: "subnet-02ac254bd167222c0"
+        instance_type: "t2.micro"
+        security_group: "allow_all_traffic"
+        region: "us-east-2"
+        aws_access_key: "{{ access_key }}"
+        aws_secret_key: "{{ secret_key }}"
+        image_id: "ami-085f9c64a9b75eed5"
+        network:
+           assign_public_ip: true
+        tags:
+            Environment: Testing

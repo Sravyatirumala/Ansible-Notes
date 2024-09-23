@@ -1,26 +1,62 @@
 ---
 - hosts: localhost
   connection: local
-
-  tasks: 
+  become: yes
+  vars_files:
+    - secrets.yml  
+  tasks:
     - name: Create EC2 instances
       amazon.aws.ec2_instance:
-       name: "{{item.name}}"
-       key_name: "us-east-2"
-       vpc_subnet_id: "subnet-080267d8f17e627df"
+       name: "Ansible-Node3"          
+       key_name: "useast-2"
+       vpc_subnet_id: "subnet-02ac254bd167222c0"
        instance_type: "t2.micro"
        security_group: "allow_all_traffic"
        region: "us-east-2"
        aws_access_key: "{{ access_key }}"
        aws_secret_key: "{{ secret_key }}"
-       image_id: "{{item.image}}" 
+       image_id: "ami-085f9c64a9b75eed5"
        network:
           assign_public_ip: true
        tags:
             Environment: Testing
-      loop: 
-        - { image: "ami-0862be96e41dcbf74", name: "manage-node-1" }
-        - { image: "ami-0862be96e41dcbf74", name: "manage-node-2" }
-        - { image: "ami-08be1e3e6c338b037", name: "manage-node-3" }
-     
-       
+    # - name: Print the secret key
+    #   debug:
+    #     msg: "The secret key is {{ secret_key }}"
+ 
+
+#If we want to stop instance 
+#tasks:
+#   - name: stop EC2 instances
+#amazon.aws.ec2_instance:
+ #instance_ids:
+#- "i-09ec215d59165ac89"  # Replace with your actual instance ID
+# state: stopped
+
+
+# Before that set:
+# openssl rand -base64 2048 > vault.pass
+
+# Create vaultfile:
+# ansible-vault create secrets.yml --vault-password-file vault.pass .
+
+# Note: command generates random code and put in vault and encode thre file.
+
+
+# error: externally-managed-environment
+
+# × This environment is externally managed
+# ╰─> To install Python packages system-wide, try apt install
+#     python3-xyz, where xyz is the package you are trying to
+#     install.
+
+#     sudo apt install python3-venv
+#     python3 -m venv myenv
+#     source myenv/bin/activate
+#     pip install boto3 botocore
+#     deactivate
+
+
+# Run 
+# ansible-playbook instance.yml --vault-password-file vault.pass -i hosts
+
